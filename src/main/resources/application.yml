@@ -1,0 +1,15 @@
+spring:
+  rabbitmq:
+    username: guest
+    password: guest
+    host: localhost
+    port: 5672
+
+  security:
+    user:
+      name: admin
+      password: admin
+
+stripe:
+  secretKey: ${SECRET_KEY_STRIPE}
+  publicKey: ${PUBLIC_KEY_STRIPE}
