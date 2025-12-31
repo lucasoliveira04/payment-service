@@ -1,40 +1,43 @@
 package org.payments.payment_api.services;
 
-import com.stripe.exception.StripeException;
-import com.stripe.model.Charge;
-import com.stripe.param.ChargeCreateParams;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.payments.payment_api.dto.PaymentMessage;
 import org.payments.payment_api.dto.PaymentRequestDto;
+import org.payments.payment_api.services.processors.PaymentProcessor;
+import org.payments.payment_api.services.processors.PaymentProcessorFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import static org.payments.payment_api.configuration.RabbitMqConfig.PAYMENT_QUEUE;
+
 @Slf4j
-@Service("stripePayment")
+@RequiredArgsConstructor
+@Service(StripePaymentImpl.SERVICE_NAME)
 public class StripePaymentImpl implements IPayment{
 
+    public static final String SERVICE_NAME = "stripePayment";
     private static final Integer VALUE_MIN = 50;
     private static final Integer VALUE_MAX = 100;
+    private final RabbitTemplate rabbitTemplate;
+    private final PaymentProcessorFactory paymentProcessorFactory;
 
     @Override
     public void processPayment(PaymentRequestDto paymentDetails) {
 
         if (paymentDetails.amount() < VALUE_MIN || paymentDetails.amount() > VALUE_MAX) {
-            log.warn("Payment amount " + paymentDetails.amount() + " is out of allowed range.");
-            return;
+            throw new IllegalArgumentException(
+                    "Payment amount out of allowed range"
+            );
         }
 
-        try {
-            ChargeCreateParams params = ChargeCreateParams.builder()
-                    .setAmount(paymentDetails.amount())
-                    .setCurrency(paymentDetails.currency())
-                    .setDescription(paymentDetails.description())
-                    .setSource(paymentDetails.token())
-                    .build();
+        paymentProcessorFactory.get(
+                SERVICE_NAME,
+                paymentDetails.method()
+        );
 
-            Charge charge = Charge.create(params);
-
-            log.info("Charge created successfully with ID: " + charge.getId());
-        } catch (StripeException e){
-            e.printStackTrace();
-        }
+        PaymentMessage message = new PaymentMessage(SERVICE_NAME, paymentDetails);
+        rabbitTemplate.convertAndSend(PAYMENT_QUEUE, message);
+        log.info("Payment message sent to queue: {}", PAYMENT_QUEUE);
     }
 }

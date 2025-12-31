@@ -21,12 +21,10 @@ public class PaymentController {
     public ResponseEntity<String> testPayment(@RequestBody PaymentFullRequest request) {
         IPayment payment = paymentFactory.getPayment(request.paymentMethod());
 
-        if (payment == null) return ResponseEntity
-                .badRequest()
-                .body("Unsupported payment method");
-
         payment.processPayment(request.payment());
 
-        return ResponseEntity.ok("Payment processed successfully");
+        return ResponseEntity
+                .accepted()
+                .body("Payment request accepted");
     }
 }
