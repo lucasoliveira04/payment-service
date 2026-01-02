@@ -1,3 +1,10 @@
+management:
+  metrics:
+    export:
+      otlp:
+        enabled: true
+        url: http://localhost:4318/v1/metrics
+
 spring:
   rabbitmq:
     username: guest

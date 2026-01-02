@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "stripe.publicKey",
+      "type": "java.lang.String",
+      "description": "Description for stripe.publicKey."
+  }
+] }
