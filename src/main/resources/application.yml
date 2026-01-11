@@ -1,9 +1,17 @@
+application:
+  name: payment-service
+  version: 1.0.0
+
+server:
+  port: 8082
+
 management:
   metrics:
     export:
       otlp:
         enabled: true
         url: http://localhost:4318/v1/metrics
+        protocol: http/protobuf
 
 spring:
   rabbitmq:
@@ -11,7 +19,6 @@ spring:
     password: guest
     host: localhost
     port: 5672
-
 
   security:
     user:
