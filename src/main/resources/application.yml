@@ -27,6 +27,22 @@ spring:
     user:
       name: admin
       password: admin
+  data:
+    redis:
+        host: redis
+        port: 6379
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/payments_db
+    username: payments_user
+    password: payments_pass
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+
+  jpa:
+    hibernate:
+      ddl-auto: update
 
 stripe:
   secretKey: ${SECRET_KEY_STRIPE}

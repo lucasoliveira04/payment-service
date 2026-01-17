@@ -3,7 +3,7 @@ version: "3.8"
 services:
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
+    container_name: rabbitmq-payments
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -14,9 +14,32 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     restart: unless-stopped
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis-payments
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-payments
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: payments_db
+      POSTGRES_USER: payments_user
+      POSTGRES_PASSWORD: payments_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
   otel-collector:
     image: otel/opentelemetry-collector:latest
-    container_name: otel-collector
+    container_name: otel-collector-payments
     command: ["--config=/etc/otelcol/config.yaml"]
     volumes:
       - ./otel-collector.yml:/etc/otelcol/config.yaml
@@ -26,13 +49,7 @@ services:
       - "9464:9464"
     restart: unless-stopped
 
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    volumes:
-      - C:/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    ports:
-      - "9090:9090"
-
 volumes:
   rabbitmq_data:
+  redis_data:
+  postgres_data:
