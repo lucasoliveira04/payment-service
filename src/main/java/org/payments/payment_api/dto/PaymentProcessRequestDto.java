@@ -10,6 +10,8 @@ public record PaymentProcessRequestDto(
         String token,
 
         @JsonProperty("payment_method")
-        PaymentMethodEnum method
+        PaymentMethodEnum method,
+
+        String idempotencyKey
 ) {
 }

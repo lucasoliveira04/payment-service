@@ -1,4 +1,4 @@
-package org.payments.payment_api.producer;
+package org.payments.payment_api.service.producer;
 
 import org.payments.payment_api.dto.PaymentProcessRequestDto;
 

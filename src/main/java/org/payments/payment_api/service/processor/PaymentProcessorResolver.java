@@ -1,4 +1,4 @@
-package org.payments.payment_api.processor;
+package org.payments.payment_api.service.processor;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class PaymentProcessorFactory {
+public class PaymentProcessorResolver {
 
     private final Map<String, PaymentGatewayProcessor> processors;
 

@@ -1,4 +1,4 @@
-package org.payments.payment_api.processor;
+package org.payments.payment_api.service.processor;
 
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class StripeGatewayProcessor implements PaymentGatewayProcessor{
     @Override
     public void process(PaymentProcessRequestDto payment) {
-        log.info("Calling Stripe API with {}", payment);
+        log.info("[StripeGatewayProcessor] Processing payment: {}", payment);
 
         ChargeCreateParams params = ChargeCreateParams.builder()
                 .setAmount(payment.amount())
@@ -23,6 +23,7 @@ public class StripeGatewayProcessor implements PaymentGatewayProcessor{
 
         try {
             Charge.create(params);
+            log.info("[StripeGatewayProcessor] Payment processed successfully: {}", payment);
         } catch (StripeException e) {
             throw new RuntimeException(e);
         }
