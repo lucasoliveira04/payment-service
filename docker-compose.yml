@@ -24,6 +24,19 @@ services:
       - redis_data:/data
     restart: unless-stopped
 
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-payments
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: payments_db
+      POSTGRES_USER: payments_user
+      POSTGRES_PASSWORD: payments_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
   otel-collector:
     image: otel/opentelemetry-collector:latest
     container_name: otel-collector-payments
@@ -39,3 +52,4 @@ services:
 volumes:
   rabbitmq_data:
   redis_data:
+  postgres_data:
