@@ -27,6 +27,10 @@ spring:
     user:
       name: admin
       password: admin
+  data:
+    redis:
+        host: redis
+        port: 6379
 
 stripe:
   secretKey: ${SECRET_KEY_STRIPE}
