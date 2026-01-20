@@ -3,7 +3,7 @@ package org.payments.payment_api.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.payments.payment_api.enums.PaymentMethodEnum;
-import org.payments.payment_api.enums.StatesPayment;
+import org.payments.payment_api.enums.StatusPayment;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -34,8 +34,8 @@ public class Payment {
     private String token;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "state", nullable = false)
-    private StatesPayment state;
+    @Column(name = "status", nullable = false)
+    private StatusPayment status;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_method", nullable = false)

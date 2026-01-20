@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.payments.payment_api.config.rabbitmq.RabbitMQQueues;
 import org.payments.payment_api.dto.PaymentMessage;
 import org.payments.payment_api.dto.PaymentProcessRequestDto;
-import org.payments.payment_api.enums.StatesPayment;
+import org.payments.payment_api.enums.StatusPayment;
 import org.payments.payment_api.model.Payment;
 import org.payments.payment_api.repository.PaymentRepository;
 import org.payments.payment_api.service.processor.PaymentProcessorResolver;
@@ -40,18 +40,18 @@ public class PaymentProcessWorker {
         Payment payment = paymentRepository.findByIdempotencyKey(dto.idempotencyKey())
                 .orElseThrow(() -> new IllegalArgumentException("Payment not found for idempotency key: " + dto.idempotencyKey()));
 
-        if (payment.getState() == StatesPayment.SUCCESS){
+        if (payment.getStatus() == StatusPayment.SUCCESS){
             log.info("[Worker] Payment already processed successfully for idempotency: {}. Skipping.", dto.idempotencyKey());
             return;
         }
 
-        if (payment.getState() == StatesPayment.PROCESSING){
+        if (payment.getStatus() == StatusPayment.PROCESSING){
             log.info("[Worker] Payment is already in PROCESSING state for idempotency: {}. Skipping.", dto.idempotencyKey());
             return;
         }
 
         try {
-            payment.setState(StatesPayment.PROCESSING);
+            payment.setStatus(StatusPayment.PROCESSING);
             paymentRepository.save(payment);
 
             log.info("[Worker] Payment state updated to PROCESSING for idempotency: {}", dto.idempotencyKey());
@@ -60,13 +60,13 @@ public class PaymentProcessWorker {
                     .get(paymentMessage.paymentMethod())
                     .process(dto);
 
-            payment.setState(StatesPayment.SUCCESS);
+            payment.setStatus(StatusPayment.SUCCESS);
             paymentRepository.save(payment);
             log.info("[Worker] Payment processed successfully for idempotency: {}", dto.idempotencyKey());
             log.info("[Worker] Key idempotency: {}", dto.idempotencyKey());
         } catch (Exception e) {
             log.error("[Worker] Error processing payment for idempotency: {}: {}", dto.idempotencyKey(), e.getMessage());
-            payment.setState(StatesPayment.FAILED);
+            payment.setStatus(StatusPayment.FAILED);
             paymentRepository.save(payment);
         } finally {
             log.info("[Worker] Finalizing payment processing for idempotency: {}", dto.idempotencyKey());

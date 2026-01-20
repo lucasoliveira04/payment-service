@@ -3,7 +3,7 @@ package org.payments.payment_api.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.payments.payment_api.dto.PaymentProcessRequestDto;
-import org.payments.payment_api.enums.StatesPayment;
+import org.payments.payment_api.enums.StatusPayment;
 import org.payments.payment_api.mapper.PaymentMapper;
 import org.payments.payment_api.model.Payment;
 import org.payments.payment_api.repository.PaymentRepository;
@@ -46,7 +46,7 @@ public class PaymentProcessService {
 
         Payment payment = PaymentMapper.toEntity(effectiveDto);
 
-        payment.setState(StatesPayment.PENDING);
+        payment.setStatus(StatusPayment.PENDING);
         paymentRepository.save(payment);
 
         log.info("[Service] Payment saved with ID: {}", payment.getId());

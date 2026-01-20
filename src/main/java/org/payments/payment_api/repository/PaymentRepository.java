@@ -19,8 +19,8 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     @Modifying
     @Query("""
         UPDATE Payment p
-        SET p.state = 'CANCELLED'
-        WHERE p.state = 'PENDING'
+        SET p.status = 'CANCELLED'
+        WHERE p.status = 'PENDING'
           AND p.createdAt < :limit
     """)
     void cancelExpired(OffsetDateTime limit);

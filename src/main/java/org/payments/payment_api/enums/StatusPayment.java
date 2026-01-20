@@ -1,6 +1,6 @@
 package org.payments.payment_api.enums;
 
-public enum StatesPayment {
+public enum StatusPayment {
     PENDING,
     PROCESSING,
     SUCCESS,
