@@ -7,6 +7,7 @@ import org.payments.payment_api.repository.PaymentRepository;
 import org.payments.payment_api.service.PaymentProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Profile;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -35,14 +36,15 @@ class PaymentIdempotencyConcurrencyTest {
                 "Pagamento concorrente",
                 "tok_visa",
                 PaymentMethodEnum.DEBIT,
-                "order-thread-test"
+                "order-thread-test-1"
         );
 
         for (int i = 0; i < threads; i++) {
             executor.submit(() -> {
                 try {
                     service.processPayment(dto, PaymentMethodEnum.DEBIT.toString());
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    e.printStackTrace();
                 } finally {
                     latch.countDown();
                 }

@@ -33,9 +33,9 @@ spring:
         port: 6379
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/payments_db
-    username: payments_user
-    password: payments_pass
+    url: ${DB_POSTGRES_URL}
+    username: ${DB_POSTGRES_USER}
+    password: ${DB_POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
