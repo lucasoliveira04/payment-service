@@ -1,31 +1,28 @@
 version: "3.8"
 
 services:
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq-payments
+  payments-service:
+    image: payments-service:latest
+    container_name: payment-service
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "8083:8083"
+    env_file:
+      - .env.docker
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - SPRING_PROFILES_ACTIVE=docker
     restart: unless-stopped
-
-  redis:
-    image: redis:7-alpine
-    container_name: redis-payments
-    ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
-    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - payments-net
 
   postgres:
-    image: postgres:16-alpine
+    image: postgres:15-alpine
     container_name: postgres-payments
     ports:
       - "5432:5432"
@@ -35,7 +32,38 @@ services:
       POSTGRES_PASSWORD: payments_pass
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
+    networks:
+      - payments-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payments_user -d payments_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - payments-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    networks:
+      - payments-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   otel-collector:
     image: otel/opentelemetry-collector:latest
@@ -50,6 +78,10 @@ services:
     restart: unless-stopped
 
 volumes:
+  postgres_data:
   rabbitmq_data:
   redis_data:
-  postgres_data:
+
+networks:
+  payments-net:
+    driver: bridge
