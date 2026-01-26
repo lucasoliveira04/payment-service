@@ -20,7 +20,7 @@ public class PaymentTimeoutJob {
     private final PaymentRepository paymentRepository;
     private final JdbcTemplate jdbcTemplate;
 
-    @Scheduled(fixedDelay = 10_000)
+    @Scheduled(fixedDelay = 10_000, initialDelay = 15_000)
     @Transactional
     public void cancelPendingPayments() {
         jdbcTemplate.execute("select cancel_expired_payments()");
