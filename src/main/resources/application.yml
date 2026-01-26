@@ -1,49 +1,20 @@
-application:
-  name: payment-service
-  version: 1.0.0
-
-server:
-  port: 8082
-
-management:
-  metrics:
-    export:
-      otlp:
-        enabled: true
-        url: http://localhost:4318/v1/metrics
-        protocol: http/protobuf
-
 spring:
-  config:
-    import: optional:file:.env[.properties]
-
-  rabbitmq:
-    username: guest
-    password: guest
-    host: localhost
-    port: 5672
-
-  security:
-    user:
-      name: admin
-      password: admin
-  data:
-    redis:
-        host: redis
-        port: 6379
-
-  datasource:
-    url: ${DB_POSTGRES_URL}
-    username: ${DB_POSTGRES_USER}
-    password: ${DB_POSTGRES_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 10
-
+  application:
+    name: payment-service
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 
-stripe:
-  secretKey: ${SECRET_KEY_STRIPE}
-  publicKey: ${PUBLIC_KEY_STRIPE}
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
