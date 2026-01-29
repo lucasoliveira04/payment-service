@@ -4,6 +4,7 @@ services:
   payments-service:
     image: payments-service:latest
     container_name: payment-service
+    build: .
     ports:
       - "8083:8083"
     env_file:
@@ -38,12 +39,12 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U payments_user -d payments_db"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3.13-management
     container_name: rabbitmq
     ports:
       - "5672:5672"
@@ -52,10 +53,10 @@ services:
       - payments-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "status"]
-      interval: 5s
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 12
 
   redis:
     image: redis:7-alpine
@@ -88,4 +89,7 @@ volumes:
 
 networks:
   payments-net:
-    driver: bridge
+    external: true
+
+  events-backend:
+    external: true
