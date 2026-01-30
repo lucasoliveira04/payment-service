@@ -14,19 +14,6 @@ spring:
     username: guest
     password: guest
 
-  data:
-    redis:
-      host: redis
-      port: 6379
-
-management:
-  metrics:
-    export:
-      otlp:
-        enabled: true
-        url: http://otel-collector:4318/v1/metrics
-        protocol: http/protobuf
-
 stripe:
   secretKey: ${SECRET_KEY_STRIPE}
   publicKey: ${PUBLIC_KEY_STRIPE}

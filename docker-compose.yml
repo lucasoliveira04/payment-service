@@ -17,8 +17,6 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      redis:
-        condition: service_healthy
     networks:
       - payments-net
       - events-backend
@@ -58,34 +56,9 @@ services:
       timeout: 5s
       retries: 12
 
-  redis:
-    image: redis:7-alpine
-    container_name: redis
-    networks:
-      - payments-net
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  otel-collector:
-    image: otel/opentelemetry-collector:latest
-    container_name: otel-collector-payments
-    command: ["--config=/etc/otelcol/config.yaml"]
-    volumes:
-      - ./otel-collector.yml:/etc/otelcol/config.yaml
-    ports:
-      - "4317:4317"
-      - "4318:4318"
-      - "9464:9464"
-    restart: unless-stopped
-
 volumes:
   postgres_data:
   rabbitmq_data:
-  redis_data:
 
 networks:
   payments-net:

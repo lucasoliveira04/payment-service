@@ -1,6 +1,7 @@
 spring:
   application:
     name: payment-service
+
   jpa:
     hibernate:
       ddl-auto: create
@@ -14,12 +15,18 @@ spring:
     baseline-on-migrate: true
 
 management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
   endpoints:
     web:
       exposure:
         include: health,info,prometheus
-    endpoint:
-      health:
-        show-details: always
-        probes:
-          enabled: true
+  endpoint:
+    prometheus:
+      enabled: true
+
+  metrics:
+    tags:
+      application: payment-service
