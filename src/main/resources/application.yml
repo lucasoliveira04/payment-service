@@ -1,4 +1,18 @@
+server:
+  tomcat:
+    threads:
+      min-spare: 2
+      max: 50
+    accept-count: 100
+
+
 spring:
+  datasource:
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 5
+      idle-timeout: 30000
+      max-lifetime: 600000
   application:
     name: payment-service
 
@@ -26,7 +40,15 @@ management:
   endpoint:
     prometheus:
       enabled: true
-
   metrics:
+    enable:
+      process: true
+      jvm: true
+      system: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.9, 0.95, 0.99
     tags:
       application: payment-service
