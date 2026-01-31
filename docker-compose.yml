@@ -10,8 +10,21 @@ services:
     env_file:
       - .env.docker
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      SPRING_PROFILES_ACTIVE: docker
+      JAVA_TOOL_OPTIONS: >
+        -XX:+UseContainerSupport
+        -XX:MaxRAMPercentage=60
+        -XX:InitialRAMPercentage=10
+        -XX:ActiveProcessorCount=1
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 256M
     depends_on:
       postgres:
         condition: service_healthy
