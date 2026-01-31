@@ -1,0 +1,19 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: payments-service-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: payments-service
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Pods
+      pods:
+        metric:
+          name: api_cpu
+        target:
+          type: AverageValue
+          averageValue: 50
