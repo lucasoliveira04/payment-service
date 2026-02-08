@@ -12,6 +12,7 @@ import org.payments.payment_api.service.processor.PaymentProcessorResolver;
 import org.slf4j.MDC;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
@@ -24,7 +25,11 @@ public class PaymentProcessWorker {
     private final ObjectMapper objectMapper;
     private final PaymentRepository paymentRepository;
 
-    @RabbitListener(queues = RabbitMQQueues.PAYMENT_PROCESS_QUEUE)
+    @RabbitListener(
+            queues = RabbitMQQueues.PAYMENT_PROCESS_QUEUE,
+            containerFactory = "rabbitListenerContainerFactory",
+            autoStartup = "${app.rabbit.listener.enabled}"
+    )
     public void listen(Message message) throws Exception {
         log.info("[Worker] Received payment processing message from RabbitMQ");
 
