@@ -1,4 +1,7 @@
 spring:
+  health:
+    rabbitmq:
+      enabled: true
   config:
     config:
       import: optional:file:.env.local.properties
@@ -15,9 +18,15 @@ spring:
     port: 5672
     username: guest
     password: guest
+    connection-timeout: 5s
 
 stripe:
   secretKey: ${SECRET_KEY_STRIPE}
   publicKey: ${PUBLIC_KEY_STRIPE}
 server:
   port: 8082
+
+app:
+  rabbit:
+    listener:
+      enabled: false

@@ -1,7 +1,12 @@
 spring:
+  flyway:
+    enabled: true
+    schemas: payment
+    baseline-on-migrate: true
+
   config:
     activate:
-      on-profile: docker
+      on-profile: hml
 
   datasource:
     url: ${DB_POSTGRES_URL}
