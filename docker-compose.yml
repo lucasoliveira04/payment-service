@@ -2,15 +2,17 @@ version: "3.8"
 
 services:
   payments-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: payments-service:latest
     container_name: payment-service
-    build: .
     ports:
       - "8083:8083"
     env_file:
-      - .env.docker
+      - .env.hml
     environment:
-      SPRING_PROFILES_ACTIVE: docker
+      SPRING_PROFILES_ACTIVE: hml
       JAVA_TOOL_OPTIONS: >
         -XX:+UseContainerSupport
         -XX:MaxRAMPercentage=60
